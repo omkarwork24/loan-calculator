@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Premium EMI | Omkar Shigvan</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class'
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  background: radial-gradient(circle at top, #e5e7eb, #f9fafb 60%);
+}
+.dark body {
+  background: radial-gradient(circle at top, #1a1a2e, #0b0b0f 60%);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.5);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.8);
+}
+.glow {
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.25);
+}
+</style>
+</head>
+
+<body class="text-gray-900 dark:text-white font-sans transition-colors duration-500">
+
+<header class="px-8 py-6 text-sm border-b border-gray-300 dark:border-gray-800 flex justify-between items-center">
+  <span class="tracking-widest text-gray-500 dark:text-gray-400">
+    EMI CALCULATOR
+  </span>
+
+  <!-- Dark Toggle Button -->
+  <button id="themeToggle"
+    class="text-sm px-4 py-1 rounded-full border border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+    Toggle Mode
+  </button>
+</header>
+
+<div class="max-w-6xl mx-auto px-6 py-10 space-y-10">
+
+  <!-- TOP SECTION -->
+  <div class="grid md:grid-cols-2 gap-8">
+
+    <!-- LEFT -->
+    <div class="space-y-6">
+
+      <div class="bg-white/70 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-8 glow transition">
+        <p class="text-gray-500 dark:text-gray-400 mb-2">Monthly EMI</p>
+        <h2 id="emi" class="text-4xl font-semibold">₹ 0</h2>
+
+        <div class="flex gap-8 mt-4 text-sm text-gray-500 dark:text-gray-400">
+          <p>Interest: ₹ <span id="totalInterest">0</span></p>
+          <p>Total: ₹ <span id="totalPayment">0</span></p>
+        </div>
+      </div>
+
+      <div class="bg-white/70 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-6 space-y-6 transition">
+
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <label>Loan Amount</label>
+            <span id="loanAmountValue"></span>
+          </div>
+          <input type="range" id="loanAmount"
+            min="10000" max="2000000" step="10000"
+            value="500000"
+            class="w-full accent-purple-500">
+        </div>
+
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <label>Interest Rate</label>
+            <span id="interestRateValue"></span>
+          </div>
+          <input type="range" id="interestRate"
+            min="1" max="20" step="0.1"
+            value="8"
+            class="w-full accent-purple-500">
+        </div>
+
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <label>Tenure (Years)</label>
+            <span id="loanTenureValue"></span>
+          </div>
+          <input type="range" id="loanTenure"
+            min="1" max="30" step="1"
+            value="5"
+            class="w-full accent-purple-500">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT CHART -->
+    <div class="bg-white/70 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-8 flex items-center justify-center glow transition">
+      <div class="w-64">
+        <canvas id="emiChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- AMORTIZATION -->
+  <div class="bg-white/70 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-8 glow transition">
+
+    <button onclick="toggleAmortization()"
+      class="w-full text-left text-lg mb-4 flex justify-between items-center">
+      <span>Your Amortization Details</span>
+      <span id="collapseIcon">+</span>
+    </button>
+
+    <div id="amortizationContent"
+      class="max-h-0 overflow-hidden transition-all duration-500">
+
+      <div class="flex gap-6 mb-4 text-sm">
+        <button onclick="setMode('monthly')" id="monthlyBtn"
+          class="text-purple-500">Monthly</button>
+        <button onclick="setMode('yearly')" id="yearlyBtn"
+          class="text-gray-400">Yearly</button>
+      </div>
+
+      <div class="max-h-72 overflow-y-auto">
+        <table class="w-full text-sm">
+          <thead class="text-gray-500 dark:text-gray-400">
+            <tr>
+              <th>Period</th>
+              <th>Principal</th>
+              <th>Interest</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleTable"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+document.getElementById("themeToggle").addEventListener("click", () => {
+  document.documentElement.classList.toggle("dark");
+});
+
+function toggleAmortization(){
+  const content = document.getElementById("amortizationContent");
+  const icon = document.getElementById("collapseIcon");
+
+  content.classList.toggle("max-h-0");
+  content.classList.toggle("max-h-[800px]");
+
+  icon.innerText = icon.innerText === "+" ? "−" : "+";
+}
+
+/* ---- EXISTING EMI LOGIC (UNCHANGED) ---- */
+
+let chart;
+let animationFrame;
+let mode = "monthly";
+let lastEmi = 0;
+
+const loanAmount = document.getElementById("loanAmount");
+const interestRate = document.getElementById("interestRate");
+const loanTenure = document.getElementById("loanTenure");
+
+loanAmount.addEventListener("input", updateValues);
+interestRate.addEventListener("input", updateValues);
+loanTenure.addEventListener("input", updateValues);
+
+function format(num){
+  return Number(num).toLocaleString("en-IN");
+}
+
+function animateValue(element, start, end, duration) {
+  cancelAnimationFrame(animationFrame);
+  let startTime = null;
+
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const progress = timestamp - startTime;
+    const percent = Math.min(progress / duration, 1);
+    const value = Math.floor(start + (end - start) * percent);
+    element.innerText = "₹ " + format(value);
+    if (percent < 1) animationFrame = requestAnimationFrame(step);
+  }
+
+  animationFrame = requestAnimationFrame(step);
+}
+
+function updateValues() {
+  document.getElementById("loanAmountValue").innerText =
+    "₹ " + format(loanAmount.value);
+  document.getElementById("interestRateValue").innerText =
+    interestRate.value + "%";
+  document.getElementById("loanTenureValue").innerText =
+    loanTenure.value + " Years";
+
+  calculateEMI();
+}
+
+function calculateEMI() {
+  const P = parseFloat(loanAmount.value);
+  const r = parseFloat(interestRate.value) / 12 / 100;
+  const n = parseFloat(loanTenure.value) * 12;
+
+  const emi = (P * r * Math.pow(1 + r, n)) /
+              (Math.pow(1 + r, n) - 1);
+
+  const totalPayment = emi * n;
+  const totalInterest = totalPayment - P;
+
+  animateValue(document.getElementById("emi"), lastEmi, emi, 400);
+  lastEmi = emi;
+
+  document.getElementById("totalInterest").innerText =
+    format(totalInterest);
+  document.getElementById("totalPayment").innerText =
+    format(totalPayment);
+
+  generateChart(P, totalInterest);
+  generateSchedule(P, r, n, emi);
+}
+
+function generateChart(principal, interest) {
+  const ctx = document.getElementById("emiChart");
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Principal", "Interest"],
+      datasets: [{
+        data: [principal, interest],
+        backgroundColor: ["#8b5cf6", "#27272a"],
+        borderWidth: 0
+      }]
+    },
+    options: { cutout: "75%" }
+  });
+}
+
+function generateSchedule(P, r, n, emi) {
+  let balance = P;
+  const tbody = document.getElementById("scheduleTable");
+  tbody.innerHTML = "";
+
+  for (let i = 1; i <= n; i++) {
+    const interest = balance * r;
+    const principal = emi - interest;
+    balance -= principal;
+
+    tbody.innerHTML += `
+      <tr class="border-b border-gray-200 dark:border-gray-800">
+        <td class="py-2">${i}</td>
+        <td>${format(principal)}</td>
+        <td>${format(interest)}</td>
+      </tr>`;
+  }
+}
+
+updateValues();
+
+</script>
+
+</body>
+</html>
