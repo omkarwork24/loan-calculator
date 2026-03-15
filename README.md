@@ -8,7 +8,7 @@ Designed with a premium fintech-style UI including dark mode, animated calculati
 
 ## 🚀 Live Demo
 
-👉 [Add your GitHub Pages link here]
+👉  https://omkarwork24.github.io/loan-calculator/
 
 ---
 
