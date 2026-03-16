@@ -4,6 +4,8 @@ A modern fintech-style EMI Calculator built using HTML, Tailwind CSS, and Chart.
 
 Designed with a premium glassmorphism UI, real-time calculations, dark/light mode support, and interactive amortization schedule.
 
+live demo :- https://omkarwork24.github.io/loan-calculator/
+
 ---
 
 ## 🚀 Live Features
