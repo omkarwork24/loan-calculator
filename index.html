@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,277 +7,403 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-tailwind.config = {
-  darkMode: 'class'
-}
+tailwind.config = { darkMode: 'class' }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+
+/* ================= BACKGROUND ================= */
+
 body {
-  background: radial-gradient(circle at top, #e5e7eb, #f9fafb 60%);
-}
-.dark body {
-  background: radial-gradient(circle at top, #1a1a2e, #0b0b0f 60%);
+  background: url("bg/lgt.jpg") center/cover no-repeat fixed;
+  transition: background 0.6s ease, color 0.4s ease;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
+.dark body {
+  background: url("bg/drk.jpg") center/cover no-repeat fixed;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+
+/* ================= GLASS ================= */
+
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.4s ease;
 }
-::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.5);
+
+.dark .glass {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ================= REMOVE SPINNERS ================= */
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* ================= PREMIUM INPUT ================= */
+
+.input-style {
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 6px 12px;
+  text-align: right;
+  width: 120px;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.35);
+  transition: all 0.3s ease;
+}
+
+.dark .input-style {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.input-style:focus {
+  border: 1px solid #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.3);
+  outline: none;
+}
+
+/* ================= INTEREST SLIDER COLOR ================= */
+
+#interestRate {
+  accent-color: #7c3aed;
+}
+
+.dark #interestRate {
+  accent-color: #ec4899;
+}
+
+/* ================= SCROLLBAR ================= */
+
+.amort-scroll::-webkit-scrollbar { width: 6px; }
+.amort-scroll::-webkit-scrollbar-thumb {
+  background: rgba(99,102,241,0.6);
   border-radius: 10px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.8);
+
+html, body { overflow-x: hidden; }
+
+/* ================= FADE-IN ROW ANIMATION ================= */
+
+@keyframes fadeRow {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.glow {
-  box-shadow: 0 0 40px rgba(139, 92, 246, 0.25);
+
+.fade-row {
+  animation: fadeRow 0.4s ease forwards;
 }
+
 </style>
 </head>
 
-<body class="text-gray-900 dark:text-white font-sans transition-colors duration-500">
+<body class="text-gray-900 dark:text-white font-sans transition-all duration-500">
 
-<header class="px-8 py-6 text-sm border-b border-gray-300 dark:border-gray-800 flex justify-between items-center">
-  <span class="tracking-widest text-gray-500 dark:text-gray-400">
-    EMI CALCULATOR
-  </span>
-
-  <!-- Dark Toggle Button -->
+<header class="px-8 py-6 flex justify-between items-center">
+  <h1 class="text-2xl font-bold tracking-wide">EMI Calculator</h1>
   <button id="themeToggle"
-    class="text-sm px-4 py-1 rounded-full border border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 transition">
-    Toggle Mode
+    class="text-sm px-4 py-1 rounded-full border border-white/40 dark:border-white/20 hover:bg-white/20 dark:hover:bg-white/10 transition">
   </button>
 </header>
 
 <div class="max-w-6xl mx-auto px-6 py-10 space-y-10">
 
-  <!-- TOP SECTION -->
-  <div class="grid md:grid-cols-2 gap-8">
+<div class="grid md:grid-cols-2 gap-8">
 
-    <!-- LEFT -->
-    <div class="space-y-6">
+<!-- LEFT -->
+<div class="space-y-6">
 
-      <div class="bg-white/70 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-8 glow transition">
-        <p class="text-gray-500 dark:text-gray-400 mb-2">Monthly EMI</p>
-        <h2 id="emi" class="text-4xl font-semibold">₹ 0</h2>
-
-        <div class="flex gap-8 mt-4 text-sm text-gray-500 dark:text-gray-400">
-          <p>Interest: ₹ <span id="totalInterest">0</span></p>
-          <p>Total: ₹ <span id="totalPayment">0</span></p>
-        </div>
-      </div>
-
-      <div class="bg-white/70 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-6 space-y-6 transition">
-
-        <div>
-          <div class="flex justify-between text-sm mb-1">
-            <label>Loan Amount</label>
-            <span id="loanAmountValue"></span>
-          </div>
-          <input type="range" id="loanAmount"
-            min="10000" max="2000000" step="10000"
-            value="500000"
-            class="w-full accent-purple-500">
-        </div>
-
-        <div>
-          <div class="flex justify-between text-sm mb-1">
-            <label>Interest Rate</label>
-            <span id="interestRateValue"></span>
-          </div>
-          <input type="range" id="interestRate"
-            min="1" max="20" step="0.1"
-            value="8"
-            class="w-full accent-purple-500">
-        </div>
-
-        <div>
-          <div class="flex justify-between text-sm mb-1">
-            <label>Tenure (Years)</label>
-            <span id="loanTenureValue"></span>
-          </div>
-          <input type="range" id="loanTenure"
-            min="1" max="30" step="1"
-            value="5"
-            class="w-full accent-purple-500">
-        </div>
-
-      </div>
-    </div>
-
-    <!-- RIGHT CHART -->
-    <div class="bg-white/70 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-8 flex items-center justify-center glow transition">
-      <div class="w-64">
-        <canvas id="emiChart"></canvas>
-      </div>
-    </div>
-
+<div class="glass p-8">
+  <p class="text-gray-600 dark:text-gray-300 mb-2">Monthly EMI</p>
+  <h2 id="emi" class="text-4xl font-semibold">₹ 0</h2>
+  <div class="flex gap-8 mt-4 text-sm text-gray-600 dark:text-gray-300">
+    <p>Interest: ₹ <span id="totalInterest">0</span></p>
+    <p>Total: ₹ <span id="totalPayment">0</span></p>
   </div>
+</div>
 
-  <!-- AMORTIZATION -->
-  <div class="bg-white/70 dark:bg-white/5 backdrop-blur-xl rounded-3xl p-8 glow transition">
+<div class="glass p-6 space-y-6">
 
-    <button onclick="toggleAmortization()"
-      class="w-full text-left text-lg mb-4 flex justify-between items-center">
-      <span>Your Amortization Details</span>
-      <span id="collapseIcon">+</span>
+<div>
+  <div class="flex justify-between text-sm mb-2">
+    <label>Loan Amount</label>
+    <input type="number" id="loanAmountInput" class="input-style">
+  </div>
+  <input type="range" id="loanAmount"
+    min="10000" max="2000000" step="10000"
+    value="500000"
+    class="w-full accent-indigo-500">
+</div>
+
+<div>
+  <div class="flex justify-between text-sm mb-2">
+    <label>Interest Rate (%)</label>
+    <input type="number" id="interestRateInput" step="0.1" class="input-style">
+  </div>
+  <input type="range" id="interestRate"
+    min="0" max="20" step="0.1"
+    value="8"
+    class="w-full">
+</div>
+
+<div>
+  <div class="flex justify-between text-sm mb-2">
+    <label>Tenure (Years)</label>
+    <input type="number" id="loanTenureInput" class="input-style">
+  </div>
+  <input type="range" id="loanTenure"
+    min="1" max="30" step="1"
+    value="5"
+    class="w-full accent-indigo-500">
+</div>
+
+</div>
+</div>
+
+<!-- RIGHT -->
+<div class="glass p-8">
+  <p class="text-gray-600 dark:text-gray-300 mb-4">Chart</p>
+  <div class="flex items-center justify-center">
+    <div class="w-72">
+      <canvas id="emiChart"></canvas>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- AMORTIZATION -->
+<div class="glass p-8">
+
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-xl font-semibold">Amortization Schedule</h3>
+    <button id="toggleAmort"
+      class="w-8 h-8 rounded-full border border-white/40 
+             dark:border-white/20 
+             hover:bg-white/20 dark:hover:bg-white/10 
+             transition flex items-center justify-center text-lg">
+      +
     </button>
-
-    <div id="amortizationContent"
-      class="max-h-0 overflow-hidden transition-all duration-500">
-
-      <div class="flex gap-6 mb-4 text-sm">
-        <button onclick="setMode('monthly')" id="monthlyBtn"
-          class="text-purple-500">Monthly</button>
-        <button onclick="setMode('yearly')" id="yearlyBtn"
-          class="text-gray-400">Yearly</button>
-      </div>
-
-      <div class="max-h-72 overflow-y-auto">
-        <table class="w-full text-sm">
-          <thead class="text-gray-500 dark:text-gray-400">
-            <tr>
-              <th>Period</th>
-              <th>Principal</th>
-              <th>Interest</th>
-            </tr>
-          </thead>
-          <tbody id="scheduleTable"></tbody>
-        </table>
-      </div>
-
-    </div>
-
   </div>
+
+  <div id="amortWrapper" class="hidden">
+    <div class="overflow-y-auto max-h-80 amort-scroll">
+      <table class="w-full text-sm text-right">
+        <thead class="text-gray-600 dark:text-gray-300 sticky top-0 backdrop-blur">
+          <tr>
+            <th class="py-2 text-left">Month</th>
+            <th>Principal</th>
+            <th>Interest</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody id="amortTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
 
 </div>
 
 <script>
 
-document.getElementById("themeToggle").addEventListener("click", () => {
-  document.documentElement.classList.toggle("dark");
-});
-
-function toggleAmortization(){
-  const content = document.getElementById("amortizationContent");
-  const icon = document.getElementById("collapseIcon");
-
-  content.classList.toggle("max-h-0");
-  content.classList.toggle("max-h-[800px]");
-
-  icon.innerText = icon.innerText === "+" ? "−" : "+";
-}
-
-/* ---- EXISTING EMI LOGIC (UNCHANGED) ---- */
-
 let chart;
-let animationFrame;
-let mode = "monthly";
-let lastEmi = 0;
 
 const loanAmount = document.getElementById("loanAmount");
 const interestRate = document.getElementById("interestRate");
 const loanTenure = document.getElementById("loanTenure");
 
+const loanAmountInput = document.getElementById("loanAmountInput");
+const interestRateInput = document.getElementById("interestRateInput");
+const loanTenureInput = document.getElementById("loanTenureInput");
+
+const themeToggle = document.getElementById("themeToggle");
+const toggleAmort = document.getElementById("toggleAmort");
+const amortWrapper = document.getElementById("amortWrapper");
+
+function format(num){ return Number(num).toLocaleString("en-IN"); }
+function clamp(value, min, max){ return Math.min(Math.max(value, min), max); }
+
+function updateToggleText() {
+  themeToggle.innerText =
+    document.documentElement.classList.contains("dark")
+      ? "Light Mode"
+      : "Dark Mode";
+}
+
+themeToggle.addEventListener("click", () => {
+  document.documentElement.classList.toggle("dark");
+  updateToggleText();
+  updateChartColors();
+});
+
+toggleAmort.addEventListener("click", () => {
+  amortWrapper.classList.toggle("hidden");
+  toggleAmort.innerText =
+    amortWrapper.classList.contains("hidden") ? "+" : "−";
+});
+
+updateToggleText();
+
+function syncInputs() {
+  loanAmountInput.value = loanAmount.value;
+  interestRateInput.value = interestRate.value;
+  loanTenureInput.value = loanTenure.value;
+}
+
 loanAmount.addEventListener("input", updateValues);
 interestRate.addEventListener("input", updateValues);
 loanTenure.addEventListener("input", updateValues);
 
-function format(num){
-  return Number(num).toLocaleString("en-IN");
-}
-
-function animateValue(element, start, end, duration) {
-  cancelAnimationFrame(animationFrame);
-  let startTime = null;
-
-  function step(timestamp) {
-    if (!startTime) startTime = timestamp;
-    const progress = timestamp - startTime;
-    const percent = Math.min(progress / duration, 1);
-    const value = Math.floor(start + (end - start) * percent);
-    element.innerText = "₹ " + format(value);
-    if (percent < 1) animationFrame = requestAnimationFrame(step);
+loanAmountInput.addEventListener("input", () => {
+  let value = parseFloat(loanAmountInput.value);
+  if (!isNaN(value)) {
+    value = clamp(value, 10000, 2000000);
+    loanAmount.value = value;
+    updateValues();
   }
+});
 
-  animationFrame = requestAnimationFrame(step);
-}
+interestRateInput.addEventListener("input", () => {
+  let value = parseFloat(interestRateInput.value);
+  if (!isNaN(value)) {
+    value = clamp(value, 0, 20);
+    interestRate.value = value;
+    updateValues();
+  }
+});
+
+loanTenureInput.addEventListener("input", () => {
+  let value = parseFloat(loanTenureInput.value);
+  if (!isNaN(value)) {
+    value = clamp(value, 1, 30);
+    loanTenure.value = value;
+    updateValues();
+  }
+});
 
 function updateValues() {
-  document.getElementById("loanAmountValue").innerText =
-    "₹ " + format(loanAmount.value);
-  document.getElementById("interestRateValue").innerText =
-    interestRate.value + "%";
-  document.getElementById("loanTenureValue").innerText =
-    loanTenure.value + " Years";
-
+  syncInputs();
   calculateEMI();
 }
 
 function calculateEMI() {
+
   const P = parseFloat(loanAmount.value);
-  const r = parseFloat(interestRate.value) / 12 / 100;
+  const annualRate = parseFloat(interestRate.value);
+  const r = annualRate / 12 / 100;
   const n = parseFloat(loanTenure.value) * 12;
 
-  const emi = (P * r * Math.pow(1 + r, n)) /
-              (Math.pow(1 + r, n) - 1);
+  let emi = r === 0
+    ? P / n
+    : (P * r * Math.pow(1 + r, n)) /
+      (Math.pow(1 + r, n) - 1);
 
   const totalPayment = emi * n;
   const totalInterest = totalPayment - P;
 
-  animateValue(document.getElementById("emi"), lastEmi, emi, 400);
-  lastEmi = emi;
-
+  document.getElementById("emi").innerText =
+    "₹ " + format(emi.toFixed(0));
   document.getElementById("totalInterest").innerText =
-    format(totalInterest);
+    format(totalInterest.toFixed(0));
   document.getElementById("totalPayment").innerText =
-    format(totalPayment);
+    format(totalPayment.toFixed(0));
 
   generateChart(P, totalInterest);
-  generateSchedule(P, r, n, emi);
+  generateAmortization(P, r, n, emi);
 }
 
-function generateChart(principal, interest) {
-  const ctx = document.getElementById("emiChart");
-  if (chart) chart.destroy();
+function generateAmortization(P, r, n, emi) {
 
-  chart = new Chart(ctx, {
-    type: "doughnut",
-    data: {
-      labels: ["Principal", "Interest"],
-      datasets: [{
-        data: [principal, interest],
-        backgroundColor: ["#8b5cf6", "#27272a"],
-        borderWidth: 0
-      }]
-    },
-    options: { cutout: "75%" }
-  });
-}
+  const table = document.getElementById("amortTable");
+  table.innerHTML = "";
 
-function generateSchedule(P, r, n, emi) {
   let balance = P;
-  const tbody = document.getElementById("scheduleTable");
-  tbody.innerHTML = "";
 
-  for (let i = 1; i <= n; i++) {
+  for (let month = 1; month <= n; month++) {
+
     const interest = balance * r;
     const principal = emi - interest;
     balance -= principal;
 
-    tbody.innerHTML += `
-      <tr class="border-b border-gray-200 dark:border-gray-800">
-        <td class="py-2">${i}</td>
-        <td>${format(principal)}</td>
-        <td>${format(interest)}</td>
-      </tr>`;
+    if (balance < 0) balance = 0;
+
+    const row = document.createElement("tr");
+    row.classList.add("border-b","border-white/10","fade-row");
+    row.style.animationDelay = (month * 0.02) + "s";
+
+    row.innerHTML = `
+      <td class="py-2 text-left">${month}</td>
+      <td>${format(principal.toFixed(0))}</td>
+      <td>${format(interest.toFixed(0))}</td>
+      <td>${format(balance.toFixed(0))}</td>
+    `;
+
+    table.appendChild(row);
+
+    if (balance <= 0) break;
+  }
+}
+
+function getChartColors() {
+  return document.documentElement.classList.contains("dark")
+    ? ["#6366f1", "#ec4899"]
+    : ["#1d4ed8", "#7c3aed"];
+}
+
+function generateChart(principal, interest) {
+
+  const ctx = document.getElementById("emiChart").getContext("2d");
+
+  if (!chart) {
+    chart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["Principal", "Interest"],
+        datasets: [{
+          data: [principal, interest],
+          backgroundColor: getChartColors(),
+          borderWidth: 0,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        cutout: "72%",
+        plugins: { legend: { display: false } }
+      }
+    });
+  } else {
+    chart.data.datasets[0].data = [principal, interest];
+    chart.update();
+  }
+}
+
+function updateChartColors(){
+  if(chart){
+    chart.data.datasets[0].backgroundColor = getChartColors();
+    chart.update();
   }
 }
 
