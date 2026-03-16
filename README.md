@@ -1,102 +1,72 @@
 # 💎 Premium EMI Calculator
 
-A modern, responsive and interactive **EMI (Equated Monthly Installment) Calculator** built using **HTML, TailwindCSS, and Vanilla JavaScript**.
+A modern fintech-style EMI Calculator built using HTML, Tailwind CSS, and Chart.js.
 
-Designed with a premium fintech-style UI including dark mode, animated calculations, amortization schedule, and data visualization.
-
----
-
-## 🚀 Live Demo
-
-👉  https://omkarwork24.github.io/loan-calculator/
+Designed with a premium glassmorphism UI, real-time calculations, dark/light mode support, and interactive amortization schedule.
 
 ---
 
-## 📌 Features
+## 🚀 Live Features
 
-* 📊 Real-time EMI calculation
-* 🎯 Animated EMI value transition
-* 🌙 Dark / Light mode toggle
-* 📈 Doughnut chart (Principal vs Interest)
-* 📋 Expandable Amortization Schedule
-* 🔁 Monthly & Yearly schedule modes
-* 🎨 Custom styled scrollbar
-* 📱 Fully responsive (Mobile + Desktop)
-
----
-
-## 🧮 EMI Formula Used
-
-[
-EMI = \frac{P \times r \times (1+r)^n}{(1+r)^n - 1}
-]
-
-Where:
-
-* **P** = Loan Amount
-* **r** = Monthly Interest Rate
-* **n** = Loan Tenure (in months)
+### 🎨 Premium UI
+- Glassmorphism design
+- Smooth transitions
+- Dark / Light mode toggle
+- Custom background themes
+- Styled number inputs (spinner removed)
+- Premium scrollbars
 
 ---
 
-## 🛠️ Tech Stack
-
-* **HTML5**
-* **TailwindCSS (CDN)**
-* **Vanilla JavaScript**
-* **Chart.js**
-
-No backend required — fully frontend-based financial calculator.
-
----
-
-## 🏗️ Project Structure
-
-```
-index.html
-README.md
-```
-
-All styles and scripts are embedded inside `index.html` for simplicity and easy deployment.
+### 🧮 EMI Calculation Engine
+- Accurate EMI formula implementation
+- Zero-interest edge case handling
+- Real-time updates
+- Indian currency formatting (₹ with en-IN locale)
+- Slider + manual input synchronization
+- Safe input clamping (prevents invalid values)
 
 ---
 
-## 🎨 UI Highlights
-
-* Glassmorphism inspired cards
-* Smooth animations using `requestAnimationFrame`
-* Radial gradient background (Light & Dark)
-* Minimal, fintech-grade design system
-
----
-
-## 📚 What I Learned
-
-* Implementing financial formulas in JavaScript
-* DOM manipulation & real-time UI updates
-* Chart.js integration
-* Theme switching using Tailwind `dark` class
-* Creating expandable UI sections
-* Writing clean and structured frontend logic
+### 📊 Interactive Doughnut Chart
+- Principal vs Interest visualization
+- Dynamic theme-based colors
+- Smooth hover effects
+- Custom cutout styling
+- Chart header integration
 
 ---
 
-## 💡 Future Improvements
-
-* Add Processing Fee calculation
-* Export amortization schedule to CSV
-* Add Loan Eligibility Calculator
-* Convert to React-based fintech dashboard
-* Connect with backend API for real-world usage
-
----
-
-## 👨‍💻 Author
-
-**Omkar Shigvan**
-B.Tech Computer Science & Engineering
-Frontend Developer | Aspiring Fintech Builder
+### 📋 Amortization Schedule
+- Monthly breakdown:
+  - Month
+  - Principal Paid
+  - Interest Paid
+  - Remaining Balance
+- Scrollable container
+- Sticky table header
+- Fade-in row animation
+- Collapsible section with + / − toggle
 
 ---
 
-⭐ If you found this project useful, feel free to star the repository!
+## 🛠 Tech Stack
+
+- HTML5
+- Tailwind CSS
+- Vanilla JavaScript
+- Chart.js
+
+---
+
+## 📸 UI Highlights
+
+- Fintech dashboard style layout
+- Fully responsive design
+- Clean typography
+- Professional SaaS-like feel
+
+---
+
+## 📦 Project Structure
+
