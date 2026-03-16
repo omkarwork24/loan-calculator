@@ -69,4 +69,48 @@ Designed with a premium glassmorphism UI, real-time calculations, dark/light mod
 ---
 
 ## 📦 Project Structure
+project/
+│
+├── index.html
+├── bg/
+│ ├── lgt.jpg
+│ └── drk.jpg
+└── README.md
 
+
+---
+
+## 📈 Future Improvements (Planned)
+
+- Export amortization to PDF
+- Loan comparison mode
+- Prepayment simulation
+- Processing fee inclusion
+- Backend integration
+- React conversion for full fintech app
+
+---
+
+## 👨‍💻 Author
+
+**Omkar Ashok Shigvan**  
+B.Tech Computer Science & Engineering  
+Frontend Developer | Fintech Enthusiast  
+
+---
+
+## ⭐ Why This Project?
+
+This project demonstrates:
+- UI/UX design skills
+- Financial logic implementation
+- DOM manipulation expertise
+- Interactive data visualization
+- Clean state synchronization
+- Professional Git workflow
+
+---
+
+## 📜 License
+
+This project is open-source and free to use.
